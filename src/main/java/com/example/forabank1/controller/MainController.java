@@ -9,10 +9,12 @@ import com.example.forabank1.parsing.Parser;
 import com.example.forabank1.repo.FastPaymentDataRepo;
 import com.example.forabank1.repo.OperationRepo;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,16 +42,21 @@ public class MainController {
     }
 
     @RequestMapping(value = "/", method = POST)
-    public List<Operation> main(@ModelAttribute RequestData data) throws JsonProcessingException {
+    public List<Operation> main(HttpEntity<String> httpEntity) throws JsonProcessingException {
         List<Operation> operations = operationRepo.findAll();
-
+        String body = httpEntity.getBody();
+        ObjectMapper mapper = new ObjectMapper();
+        RequestData data = mapper.readValue(body, RequestData.class);
         List<Operation> processedOperations = new OperationProcessor().process(operations, data);
         return processedOperations;
     }
 
     @RequestMapping(value = "/group", method = POST)
-    public List<GroupNode> grouping(@ModelAttribute RequestData data) throws JsonProcessingException {
+    public List<GroupNode> grouping(HttpEntity<String> httpEntity) throws JsonProcessingException {
         List<Operation> operations = operationRepo.findAll();
+        String body = httpEntity.getBody();
+        ObjectMapper mapper = new ObjectMapper();
+        RequestData data = mapper.readValue(body, RequestData.class);
         Map<Type, List<Operation>> map = new OperationProcessor().group(operations, data);
         List<GroupNode> nodes = map.entrySet().stream()
             .map(entry -> new GroupNode(entry.getKey(), entry.getValue()))
