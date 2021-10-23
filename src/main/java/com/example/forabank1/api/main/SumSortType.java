@@ -1,4 +1,4 @@
-package com.example.forabank1.api;
+package com.example.forabank1.api.main;
 
 public enum SumSortType {
     SORT_UP,

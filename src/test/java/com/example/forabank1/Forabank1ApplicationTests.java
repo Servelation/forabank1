@@ -1,15 +1,13 @@
 package com.example.forabank1;
 
-import com.example.forabank1.api.DirectionType;
-import com.example.forabank1.api.RequestData;
-import com.example.forabank1.api.SumSortType;
-import com.example.forabank1.api.Tenor;
-import com.example.forabank1.api.TenorSortingType;
-import com.example.forabank1.domain.Type;
+import com.example.forabank1.api.main.DirectionType;
+import com.example.forabank1.api.main.RequestData;
+import com.example.forabank1.api.main.SumSortType;
+import com.example.forabank1.api.main.Tenor;
+import com.example.forabank1.api.main.TenorSortingType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
 class Forabank1ApplicationTests {
 

@@ -1,17 +1,17 @@
 package com.example.forabank1.controller;
 
-import com.example.forabank1.api.DirectionType;
-import com.example.forabank1.api.RequestData;
-import com.example.forabank1.api.SumFilterType;
-import com.example.forabank1.api.SumSortType;
-import com.example.forabank1.api.Tenor;
-import com.example.forabank1.api.TenorFilterType;
-import com.example.forabank1.api.TenorSortingType;
+import com.example.forabank1.api.main.DirectionType;
+import com.example.forabank1.api.main.RequestData;
+import com.example.forabank1.api.main.SumFilterType;
+import com.example.forabank1.api.main.SumSortType;
+import com.example.forabank1.api.main.Tenor;
+import com.example.forabank1.api.main.TenorFilterType;
+import com.example.forabank1.api.main.TenorSortingType;
+import com.example.forabank1.api.main.TypeOfOperation;
 import com.example.forabank1.domain.FastPaymentData;
 import com.example.forabank1.domain.Operation;
 import com.example.forabank1.domain.Type;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -24,7 +24,21 @@ public class OperationProcessor {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private static final long COUNT_OF_SEC_IN_DAY = 86_400L;
 
-    public String process(List<Operation> operations, RequestData request) throws JsonProcessingException {
+    public List<Operation> process(List<Operation> operations, RequestData request) {
+        List<Operation> processingOperations = mainProcess(operations, request);
+        return processingOperations;
+    }
+
+    public Map<Type, List<Operation>> group(List<Operation> operations, RequestData request)
+        throws JsonProcessingException
+    {
+        List<Operation> processingOperations = mainProcess(operations, request);
+        Map<Type, List<Operation>> map = processingOperations.stream()
+            .collect(Collectors.groupingBy(Operation::getType));
+        return map;
+    }
+
+    private List<Operation> mainProcess(List<Operation> operations, RequestData request) {
         List<Operation> processingOperations = new ArrayList<>(operations);
         processingOperations = processingOperations.stream()
             .map(operation -> operation.setDate(operation.getDate() / 1000))
@@ -52,19 +66,11 @@ public class OperationProcessor {
             processingOperations = processTransferee(processingOperations, transferee);
         }
 
-        ObjectMapper mapper = new ObjectMapper();
-        DirectionType directionType = request.getDirectionType();
-        if (directionType != null) {
-            processingOperations = processDirection(processingOperations, directionType);
-            if (request.getDirectionType() == DirectionType.GROUPING) {
-                Map<Type, List<Operation>> map = processingOperations.stream()
-                    .collect(Collectors.groupingBy(
-                        Operation::getType
-                    ));
-                return mapper.writeValueAsString(map);
-            }
+        TypeOfOperation typeOfOperation = request.getTypeOfOperation();
+        if (typeOfOperation != null) {
+            processingOperations = processComment(processingOperations, typeOfOperation);
         }
-        return mapper.writeValueAsString(processingOperations);
+        return processingOperations;
     }
 
     public List<Operation> processPeriod(List<Operation> operations, String period) {
@@ -171,5 +177,20 @@ public class OperationProcessor {
                 return operation.getMerchantName().equals(transfereeName);
             })
             .collect(Collectors.toList());
+    }
+
+    public List<Operation> processComment(List<Operation> operations, TypeOfOperation type) {
+        return operations.stream()
+            .filter(operation -> isOperationMatches(operation, type))
+            .collect(Collectors.toList());
+    }
+
+    private boolean isOperationMatches(Operation operation, TypeOfOperation type) {
+        for (String name : type.getNames()) {
+            if (operation.getComment().startsWith(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

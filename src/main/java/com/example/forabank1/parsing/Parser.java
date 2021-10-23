@@ -16,27 +16,26 @@ import java.util.List;
 public class Parser {
 
     public List<Operation> findAndParse() {
-        return Collections.emptyList();
-//        URI uri;
-//        try {
-//            uri = Parser.class.getClassLoader().getResource("Vypiska.json").toURI();
-//        } catch (URISyntaxException e) {
-//            throw new IllegalStateException("ПИЗДЕЦ ВСЕ УПАЛО НЕТ JSON ФАЙЛА!", e);
-//        }
-//        Path path = Paths.get(uri);
-//        String json = "";
-//        try {
-//            json = Files.readString(path);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        ObjectMapper mapper = new ObjectMapper();
-//        ParsingObject parsingObject = null;
-//        try {
-//            parsingObject = mapper.readValue(json, ParsingObject.class);
-//        } catch (JsonProcessingException e) {
-//            e.printStackTrace();
-//        }
-//        return parsingObject == null ? Collections.emptyList() : parsingObject.getData();
+        URI uri;
+        try {
+            uri = Parser.class.getClassLoader().getResource("Vypiska.json").toURI();
+        } catch (URISyntaxException e) {
+            throw new IllegalStateException("ПИЗДЕЦ ВСЕ УПАЛО НЕТ JSON ФАЙЛА!", e);
+        }
+        Path path = Paths.get(uri);
+        String json = "";
+        try {
+            json = Files.readString(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        ParsingObject parsingObject = null;
+        try {
+            parsingObject = mapper.readValue(json, ParsingObject.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return parsingObject == null ? Collections.emptyList() : parsingObject.getData();
     }
 }

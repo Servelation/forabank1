@@ -1,6 +1,5 @@
-package com.example.forabank1.api;
+package com.example.forabank1.api.main;
 
-import com.example.forabank1.domain.Type;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class RequestData {
@@ -24,6 +23,9 @@ public class RequestData {
 
     @JsonProperty
     private SumFilterType sumFilterType;
+
+    @JsonProperty
+    private TypeOfOperation typeOfOperation;
 
     @JsonProperty
     private SumSortType sumSortType;
@@ -115,5 +117,13 @@ public class RequestData {
 
     public void setDirectionType(DirectionType directionType) {
         this.directionType = directionType;
+    }
+
+    public TypeOfOperation getTypeOfOperation() {
+        return typeOfOperation;
+    }
+
+    public void setTypeOfOperation(TypeOfOperation typeOfOperation) {
+        this.typeOfOperation = typeOfOperation;
     }
 }
