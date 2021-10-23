@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 public class OperationProcessor {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private static final long COUNT_OF_SEC_IN_DAY = 86_400L;
+
     public String process(List<Operation> operations, RequestData request) throws JsonProcessingException {
         List<Operation> processingOperations = new ArrayList<>(operations);
         processingOperations = processingOperations.stream()
@@ -48,7 +49,7 @@ public class OperationProcessor {
 
         String transferee = request.getTransferee();
         if (transferee != null) {
-            processingOperations = processTransferee(operations, transferee);
+            processingOperations = processTransferee(processingOperations, transferee);
         }
 
         ObjectMapper mapper = new ObjectMapper();
@@ -114,7 +115,8 @@ public class OperationProcessor {
 
 
     public List<Operation> processSum(List<Operation> operations, double sum,
-        SumFilterType sumFilterType, SumSortType sumSortType) {
+        SumFilterType sumFilterType, SumSortType sumSortType)
+    {
         if (sumSortType == null) {
             sumSortType = SumSortType.SORT_DOWN;
         }
@@ -134,7 +136,7 @@ public class OperationProcessor {
             return processingOperations.stream()
                 .sorted((num1, num2) -> (int) (num2.getAmount() - num1.getAmount()))
                 .collect(Collectors.toList());
-        } else if (sumSortType == SumSortType.SORT_UP){
+        } else if (sumSortType == SumSortType.SORT_UP) {
             return processingOperations.stream()
                 .sorted()
                 .collect(Collectors.toList());
@@ -144,7 +146,7 @@ public class OperationProcessor {
 
     public List<Operation> processDirection(List<Operation> operations, DirectionType directionType) {
         if (directionType == null) {
-            return  operations;
+            return operations;
         }
         List<Operation> processingOperations = new ArrayList<>(operations);
         if (directionType == DirectionType.INSIDE) {
@@ -162,7 +164,6 @@ public class OperationProcessor {
     public List<Operation> processTransferee(List<Operation> operations, String transfereeName) {
         return operations.stream()
             .filter(operation -> {
-                Type type = operation.getType();
                 if (operation.getType() == Type.INSIDE) {
                     FastPaymentData fastPaymentData = operation.getFastPaymentData();
                     return fastPaymentData.getForeignName().equals(transfereeName);

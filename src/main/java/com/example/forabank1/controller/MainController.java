@@ -10,10 +10,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -33,14 +33,14 @@ public class MainController {
     }
 
     @RequestMapping(value = "/", method = POST)
-    public String main(@RequestBody RequestData data) throws JsonProcessingException {
-//        String json = httpEntity.getBody();
-//        ObjectMapper mapper = new ObjectMapper();
-//        RequestData data = mapper.readValue(json, RequestData.class);
+    public byte[] main(HttpEntity<String> httpEntity) throws JsonProcessingException {
+        String json = httpEntity.getBody();
+        ObjectMapper mapper = new ObjectMapper();
+        RequestData data = mapper.readValue(json, RequestData.class);
         List<Operation> operations = operationRepo.findAll();
 
         String resultJson = new OperationProcessor().process(operations, data);
-        return resultJson;
+        return resultJson.getBytes(StandardCharsets.UTF_8);
     }
 
     public void initializeData() {
