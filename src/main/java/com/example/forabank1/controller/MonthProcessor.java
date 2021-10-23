@@ -1,6 +1,8 @@
 package com.example.forabank1.controller;
 
+import com.example.forabank1.api.main.TypeOfOperation;
 import com.example.forabank1.api.month.MonthStat;
+import com.example.forabank1.api.month.WasteByType;
 import com.example.forabank1.domain.Operation;
 import com.example.forabank1.domain.Type;
 
@@ -8,6 +10,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class MonthProcessor {
@@ -33,7 +36,23 @@ public class MonthProcessor {
             .mapToDouble(Operation::getAmount)
             .sum();
         double raznica = prihod - yhod;
-        return new MonthStat(prihod, yhod, raznica);
+        Map<TypeOfOperation, List<Operation>> mapa = processingOperations.stream()
+            .collect(Collectors.groupingBy(this::extractType));
+        List<WasteByType> wastes = new ArrayList<>();
+        double totalSum = mapa.values().stream()
+            .flatMap(List::stream)
+            .mapToDouble(Operation::getAmount)
+            .sum();
+        mapa.forEach((key, value) -> {
+            double sum = value.stream()
+                .mapToDouble(Operation::getAmount)
+                .sum();
+            double percent = (sum * 100) / totalSum;
+            WasteByType wasteByType = new WasteByType(key, percent);
+            wastes.add(wasteByType);
+        });
+
+        return new MonthStat(prihod, yhod, raznica, wastes);
     }
 
     // всегда 1 число даем
@@ -47,5 +66,25 @@ public class MonthProcessor {
         }
         System.out.println("НЕ НУ ЭТО УЖЕ НИ В КАКИЕ ВОРОТА"); //TODO: clean
         return date.plusDays(30).toEpochDay();
+    }
+
+    private TypeOfOperation extractType(Operation operation) {
+        String comment = operation.getComment();
+        TypeOfOperation unknown = TypeOfOperation.UNKNOWN;
+        for (TypeOfOperation type : TypeOfOperation.values()) {
+            if (isOperationMatches(operation, type)) {
+                return type;
+            }
+        }
+        return unknown;
+    }
+
+    private boolean isOperationMatches(Operation operation, TypeOfOperation type) {
+        for (String name : type.getNames()) {
+            if (operation.getComment().startsWith(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

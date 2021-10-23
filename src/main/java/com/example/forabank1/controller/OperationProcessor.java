@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class OperationProcessor {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private static final long COUNT_OF_SEC_IN_DAY = 86_400L;
-
+    private static final int PAGE_SIZE = 20;
     public List<Operation> process(List<Operation> operations, RequestData request) {
         List<Operation> processingOperations = mainProcess(operations, request);
         return processingOperations;
@@ -69,6 +69,10 @@ public class OperationProcessor {
         TypeOfOperation typeOfOperation = request.getTypeOfOperation();
         if (typeOfOperation != null) {
             processingOperations = processComment(processingOperations, typeOfOperation);
+        }
+        Integer page = request.getPage();
+        if (page != null) {
+            processingOperations = processingPagination(processingOperations, page);
         }
         return processingOperations;
     }
@@ -192,5 +196,19 @@ public class OperationProcessor {
             }
         }
         return false;
+    }
+
+    private List<Operation> processingPagination(List<Operation> operations, int page) {
+        List<Operation> cuttedAtTheBeginOperations = operations.stream()
+            .skip((page - 1) * 20L)
+            .collect(Collectors.toList());
+        List<Operation> resultingOperations = new ArrayList<>();
+        for (int i = 0; i < cuttedAtTheBeginOperations.size(); i++) {
+            if (i >= PAGE_SIZE) {
+                break;
+            }
+            resultingOperations.add(cuttedAtTheBeginOperations.get(i));
+        }
+        return resultingOperations;
     }
 }
