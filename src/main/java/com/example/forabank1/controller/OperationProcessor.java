@@ -7,6 +7,7 @@ import com.example.forabank1.api.SumSortType;
 import com.example.forabank1.api.Tenor;
 import com.example.forabank1.api.TenorFilterType;
 import com.example.forabank1.api.TenorSortingType;
+import com.example.forabank1.domain.FastPaymentData;
 import com.example.forabank1.domain.Operation;
 import com.example.forabank1.domain.Type;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -44,7 +45,12 @@ public class OperationProcessor {
             processingOperations = processTenor(processingOperations, tenor,
                 request.getTenorFilterEffect(), request.getTenorSortingEffect());
         }
-        //TODO: ЗДЕСЬ ТРАНЗИТИОН МОЖНО ВСТАВИТЬ
+
+        String transferee = request.getTransferee();
+        if (transferee != null) {
+            processingOperations = processTransferee(operations, transferee);
+        }
+
         ObjectMapper mapper = new ObjectMapper();
         DirectionType directionType = request.getDirectionType();
         if (directionType != null) {
@@ -151,5 +157,18 @@ public class OperationProcessor {
                 .collect(Collectors.toList());
         }
         return processingOperations;
+    }
+
+    public List<Operation> processTransferee(List<Operation> operations, String transfereeName) {
+        return operations.stream()
+            .filter(operation -> {
+                Type type = operation.getType();
+                if (operation.getType() == Type.INSIDE) {
+                    FastPaymentData fastPaymentData = operation.getFastPaymentData();
+                    return fastPaymentData.getForeignName().equals(transfereeName);
+                }
+                return operation.getMerchantName().equals(transfereeName);
+            })
+            .collect(Collectors.toList());
     }
 }
