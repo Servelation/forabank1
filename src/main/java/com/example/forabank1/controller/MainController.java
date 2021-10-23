@@ -1,9 +1,12 @@
 package com.example.forabank1.controller;
 
+import com.example.forabank1.api.OperationResponse;
 import com.example.forabank1.api.main.GroupNode;
 import com.example.forabank1.api.main.RequestData;
+import com.example.forabank1.api.month.MonthRequest;
 import com.example.forabank1.api.month.MonthStat;
 import com.example.forabank1.domain.Operation;
+import com.example.forabank1.domain.OperationOut;
 import com.example.forabank1.domain.Type;
 import com.example.forabank1.parsing.Parser;
 import com.example.forabank1.repo.FastPaymentDataRepo;
@@ -42,12 +45,12 @@ public class MainController {
     }
 
     @RequestMapping(value = "/", method = POST)
-    public List<Operation> main(HttpEntity<String> httpEntity) throws JsonProcessingException {
+    public OperationResponse main(HttpEntity<String> httpEntity) throws JsonProcessingException {
         List<Operation> operations = operationRepo.findAll();
         String body = httpEntity.getBody();
         ObjectMapper mapper = new ObjectMapper();
         RequestData data = mapper.readValue(body, RequestData.class);
-        List<Operation> processedOperations = new OperationProcessor().process(operations, data);
+        OperationResponse processedOperations = new OperationProcessor().process(operations, data);
         return processedOperations;
     }
 
@@ -57,7 +60,7 @@ public class MainController {
         String body = httpEntity.getBody();
         ObjectMapper mapper = new ObjectMapper();
         RequestData data = mapper.readValue(body, RequestData.class);
-        Map<Type, List<Operation>> map = new OperationProcessor().group(operations, data);
+        Map<Type, List<OperationOut>> map = new OperationProcessor().group(operations, data);
         List<GroupNode> nodes = map.entrySet().stream()
             .map(entry -> new GroupNode(entry.getKey(), entry.getValue()))
             .collect(Collectors.toList());
@@ -68,8 +71,10 @@ public class MainController {
     public MonthStat monthStat(HttpEntity<String> httpEntity) throws JsonProcessingException {
         List<Operation> operations = operationRepo.findAll();
         String body = httpEntity.getBody();
-        body = "01." + body;
-        LocalDate date = LocalDate.parse(body, DATE_FORMATTER);
+        ObjectMapper mapper = new ObjectMapper();
+        MonthRequest data = mapper.readValue(body, MonthRequest.class);
+        String strDate = "01." + data.getDate();
+        LocalDate date = LocalDate.parse(strDate, DATE_FORMATTER);
         return new MonthProcessor().process(operations, date);
     }
 

@@ -1,6 +1,7 @@
 package com.example.forabank1.api.main;
 
 import com.example.forabank1.domain.Operation;
+import com.example.forabank1.domain.OperationOut;
 import com.example.forabank1.domain.Type;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -12,12 +13,12 @@ public class GroupNode {
     private Type type;
 
     @JsonProperty
-    private List<Operation> operations;
+    private List<OperationOut> operations;
 
     public GroupNode() {
     }
 
-    public GroupNode(Type type, List<Operation> operations) {
+    public GroupNode(Type type, List<OperationOut> operations) {
         this.type = type;
         this.operations = operations;
     }
@@ -30,11 +31,11 @@ public class GroupNode {
         this.type = type;
     }
 
-    public List<Operation> getOperations() {
+    public List<OperationOut> getOperations() {
         return operations;
     }
 
-    public void setOperations(List<Operation> operations) {
+    public void setOperations(List<OperationOut> operations) {
         this.operations = operations;
     }
 }
