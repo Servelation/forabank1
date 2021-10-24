@@ -131,22 +131,26 @@ public class OperationProcessor {
         if (tenorSortingType == null) {
             tenorSortingType = TenorSortingType.SORT_DOWN;
         }
-        List<OperationOut> processingOperations = new ArrayList<>(operations);
-        if (tenorFilterType != null) {
-            if (tenorFilterType == TenorFilterType.EXACT) {
-                processingOperations = processingOperations.stream()
-                    .filter(operation -> operation.getDate() == dateOfCount)
-                    .collect(Collectors.toList());
-            } else if (tenorFilterType == TenorFilterType.FILTER_BEFORE) {
-                processingOperations = processingOperations.stream()
-                    .filter(operation -> operation.getDate() > dateOfCount)
-                    .collect(Collectors.toList());
-            } else if (tenorFilterType == TenorFilterType.FILTER_AFTER) {
-                processingOperations = processingOperations.stream()
-                    .filter(operation -> operation.getDate() < dateOfCount)
-                    .collect(Collectors.toList());
-            }
+        if (tenorFilterType == null) {
+            tenorFilterType = TenorFilterType.EXACT;
         }
+
+        List<OperationOut> processingOperations = new ArrayList<>(operations);
+
+        if (tenorFilterType == TenorFilterType.EXACT) {
+            processingOperations = processingOperations.stream()
+                .filter(operation -> operation.getDate() == dateOfCount)
+                .collect(Collectors.toList());
+        } else if (tenorFilterType == TenorFilterType.FILTER_BEFORE) {
+            processingOperations = processingOperations.stream()
+                .filter(operation -> operation.getDate() > dateOfCount)
+                .collect(Collectors.toList());
+        } else if (tenorFilterType == TenorFilterType.FILTER_AFTER) {
+            processingOperations = processingOperations.stream()
+                .filter(operation -> operation.getDate() < dateOfCount)
+                .collect(Collectors.toList());
+        }
+
         if (tenorSortingType == TenorSortingType.SORT_UP) {
             return processingOperations.stream()
                 .sorted()
