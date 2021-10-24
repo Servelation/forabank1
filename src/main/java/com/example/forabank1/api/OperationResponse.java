@@ -7,25 +7,34 @@ import java.util.List;
 
 public class OperationResponse {
     @JsonProperty
-    public Integer currentPage;
+    private Integer currentPage;
 
     @JsonProperty
-    public Integer countOfPages;
+    private Integer countOfPages;
 
     @JsonProperty
-    public Boolean ableToPagination;
+    private Boolean ableToPagination;
 
     @JsonProperty
-    public List<OperationOut> operations;
+    private Double minimalSum;
+
+    @JsonProperty
+    private Double maximumSum;
+
+    @JsonProperty
+    private List<OperationOut> operations;
 
 
     public OperationResponse() {
     }
 
-    public OperationResponse(Integer currentPage, Integer countOfPages, Boolean isAbleToPagination, List<OperationOut> operations) {
+    public OperationResponse(Integer currentPage, Integer countOfPages, Boolean isAbleToPagination,
+        Double minimalSum, Double maximumSum, List<OperationOut> operations) {
         this.currentPage = currentPage;
         this.countOfPages = countOfPages;
         this.ableToPagination = isAbleToPagination;
+        this.minimalSum = minimalSum;
+        this.maximumSum = maximumSum;
         this.operations = operations;
     }
 
@@ -61,4 +70,19 @@ public class OperationResponse {
         this.operations = operations;
     }
 
+    public Double getMinimalSum() {
+        return minimalSum;
+    }
+
+    public void setMinimalSum(Double minimalSum) {
+        this.minimalSum = minimalSum;
+    }
+
+    public Double getMaximumSum() {
+        return maximumSum;
+    }
+
+    public void setMaximumSum(Double maximumSum) {
+        this.maximumSum = maximumSum;
+    }
 }

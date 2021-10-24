@@ -6,6 +6,9 @@ import java.util.List;
 
 public class MonthStat {
     @JsonProperty
+    private String month;
+
+    @JsonProperty
     private double loss;
 
     @JsonProperty
@@ -20,10 +23,11 @@ public class MonthStat {
     public MonthStat() {
     }
 
-    public MonthStat(double arrival, double loss, double difference, List<WasteByType> wasts) {
+    public MonthStat(double arrival, double loss, double difference, String month, List<WasteByType> wasts) {
         this.arrival = arrival;
         this.loss = loss;
         this.difference = difference;
+        this.month = month;
         this.wasts = wasts;
     }
 
@@ -57,5 +61,13 @@ public class MonthStat {
 
     public void setWasts(List<WasteByType> wasts) {
         this.wasts = wasts;
+    }
+
+    public String getMonth() {
+        return month;
+    }
+
+    public void setMonth(String month) {
+        this.month = month;
     }
 }

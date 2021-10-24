@@ -9,10 +9,13 @@ public class LastInside {
     @JsonProperty
     private Double count;
 
+    @JsonProperty
+    private Double percent;
+
     public LastInside() {
     }
 
-    public LastInside(String name, Double count) {
+    public LastInside(String name, Double count, Double percent) {
         this.name = name;
         this.count = count;
     }
@@ -31,5 +34,13 @@ public class LastInside {
 
     public void setCount(Double count) {
         this.count = count;
+    }
+
+    public Double getPercent() {
+        return percent;
+    }
+
+    public void setPercent(Double percent) {
+        this.percent = percent;
     }
 }

@@ -31,12 +31,18 @@ public class LastInsidesProcessor {
                lastInside.setCount(lastInside.getCount() + operation.getAmount());
             } else {
                 tempNames.add(name);
-                lastInsides.add(new LastInside(name, operation.getAmount()));
+                lastInsides.add(new LastInside(name, operation.getAmount(), 0.0));
                 count++;
                 if (count == COUNT) {
                     break;
                 }
             }
+        }
+        double totalSum = lastInsides.stream()
+            .mapToDouble(LastInside::getCount)
+            .sum();
+        for (LastInside lastInside : lastInsides) {
+            lastInside.setPercent((lastInside.getCount() * 100) / totalSum);
         }
         return lastInsides;
     }

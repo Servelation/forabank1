@@ -20,6 +20,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalDouble;
 import java.util.stream.Collectors;
 
 public class OperationProcessor {
@@ -43,7 +45,15 @@ public class OperationProcessor {
         }
         processingOperations = processingPagination(processingOperations, page);
         Boolean isAbleToPagination = page != countOfPages;
-        return new OperationResponse(page, countOfPages, isAbleToPagination, processingOperations);
+        OptionalDouble minimumSum = processingOperations.stream()
+            .mapToDouble(OperationOut::getAmount)
+            .min();
+        OptionalDouble maximumSum = processingOperations.stream()
+            .mapToDouble(OperationOut::getAmount)
+            .max();
+        Double minim = minimumSum.isPresent() ? minimumSum.getAsDouble() : null;
+        Double max = maximumSum.isPresent() ? maximumSum.getAsDouble() : null;
+        return new OperationResponse(page, countOfPages, isAbleToPagination, minim, max, processingOperations);
     }
 
     public Map<Type, List<OperationOut>> group(List<Operation> operations, RequestData request)

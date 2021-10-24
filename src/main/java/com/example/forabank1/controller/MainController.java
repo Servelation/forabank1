@@ -89,6 +89,12 @@ public class MainController {
         return new MonthProcessor().process(operations, localDate);
     }
 
+    @RequestMapping(value = "/graph", method = GET)
+    public List<MonthStat> monthes() throws JsonProcessingException {
+        List<Operation> operations = operationRepo.findAll();
+        return new MonthProcessor().getForPeriod(operations);
+    }
+
     @RequestMapping(value = "/last", method = GET)
     public List<LastInside> lastInsides() {
         List<Operation> operations = operationRepo.findAll();
