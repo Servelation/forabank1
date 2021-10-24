@@ -202,9 +202,11 @@ public class OperationProcessor {
             .filter(operation -> {
                 if (operation.getType() == Type.INSIDE) {
                     FastPaymentData fastPaymentData = operation.getFastPaymentData();
-                    return fastPaymentData.getForeignName().equals(transfereeName);
+                    if (fastPaymentData != null) {
+                        return fastPaymentData.getForeignName().equals(transfereeName);
+                    }
                 }
-                return operation.getMerchantName().equals(transfereeName);
+                return operation.getMerchantName() != null && operation.getMerchantName().equals(transfereeName);
             })
             .collect(Collectors.toList());
     }
