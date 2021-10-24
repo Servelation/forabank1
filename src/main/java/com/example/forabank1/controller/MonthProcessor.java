@@ -69,7 +69,7 @@ public class MonthProcessor {
         for (int i = 0; i < 33; i++) {
             Month tempMonth = date.minusDays(i).getMonth();
             if (tempMonth != month) {
-                return date.toEpochDay();
+                return date.minusDays(i-1).toEpochDay();
             }
         }
         System.out.println("НЕ НУ ЭТО УЖЕ НИ В КАКИЕ ВОРОТА"); //TODO: clean
