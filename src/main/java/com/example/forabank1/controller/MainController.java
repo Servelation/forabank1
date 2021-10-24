@@ -86,7 +86,7 @@ public class MainController {
         return nodes;
     }
 
-    @RequestMapping(value = "/month", method = GET)
+    @RequestMapping(value = "/month", method = POST)
     public MonthStat monthStat(@ModelAttribute String date) throws JsonProcessingException {
         List<Operation> operations = operationRepo.findAll();
         String strDate = "01." + date;
@@ -94,7 +94,7 @@ public class MainController {
         return new MonthProcessor().process(operations, localDate);
     }
 
-    @RequestMapping(value = "/last")
+    @RequestMapping(value = "/last", method = GET)
     public List<LastInside> lastInsides() {
         List<Operation> operations = operationRepo.findAll();
         return new LastInsidesProcessor().process(operations);
@@ -107,7 +107,7 @@ public class MainController {
     }
 
 
-    @RequestMapping(value = "/test")
+    @RequestMapping(value = "/test", method = GET)
     public String main() {
         String msg = "Your server is up and running at port:" + environment.getProperty("local.server.port") + "\n" +
             "Address: " + environment.getProperty("local.server.host");
