@@ -44,7 +44,9 @@ public class LastInsidesProcessor {
         for (LastInside lastInside : lastInsides) {
             lastInside.setPercent((lastInside.getCount() * 100) / totalSum);
         }
-        return lastInsides;
+        return lastInsides.stream()
+            .sorted((op1, op2) -> (int) (op2.getCount() - op1.getCount()))
+            .collect(Collectors.toList());
     }
 
 }
