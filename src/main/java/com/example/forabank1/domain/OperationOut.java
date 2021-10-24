@@ -43,7 +43,7 @@ public class OperationOut {
     public OperationOut() {
     }
 
-    public OperationOut(Operation operation) {
+    public OperationOut(Operation operation, TypeOfOperation typeOfOperation) {
         this.type = operation.getType();
         this.date = operation.getDate();
         this.tranDate = operation.getTranDate();
@@ -54,6 +54,7 @@ public class OperationOut {
         this.currencyCodeNumeric = operation.getCurrencyCodeNumeric();
         this.fastPaymentData = operation.getFastPaymentData();
         this.MCC = operation.getMCC();
+        this.typeOfOperation = typeOfOperation;
     }
 
 

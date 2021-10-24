@@ -19,7 +19,7 @@ public class MonthProcessor {
     public MonthStat process(List<Operation> operations, LocalDate date) {
         List<Operation> processingOperations = new ArrayList<>(operations);
         processingOperations = processingOperations.stream()
-            .map(operation -> operation.setDate(operation.getDate() / 1000))
+            .map(operation -> operation.setDate(operation.getDate() / 1000 / 3600 / 24))
             .map(operation -> operation.setTranDate(operation.getTranDate() / 1000))
             .collect(Collectors.toList());
         long endDays = findEpochDayOfTheNextMonth(date);

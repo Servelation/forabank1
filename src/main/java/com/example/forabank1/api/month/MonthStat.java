@@ -24,6 +24,7 @@ public class MonthStat {
         this.arrival = arrival;
         this.loss = loss;
         this.difference = difference;
+        this.wasts = wasts;
     }
 
     public double getLoss() {

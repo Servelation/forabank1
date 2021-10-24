@@ -30,7 +30,7 @@ public class OperationProcessor {
 
     public OperationResponse process(List<Operation> operations, RequestData request) {
         List<OperationOut> operationOuts = operations.stream()
-            .map(OperationOut::new)
+            .map(operation -> new OperationOut(operation, request.getTypeOfOperation()))
             .collect(Collectors.toList());
         List<OperationOut> processingOperations = mainProcess(operationOuts, request);
         Integer page = request.getPage();
@@ -50,7 +50,7 @@ public class OperationProcessor {
         throws JsonProcessingException
     {
         List<OperationOut> operationOuts = operations.stream()
-            .map(OperationOut::new)
+            .map(operation -> new OperationOut(operation, request.getTypeOfOperation()))
             .collect(Collectors.toList());
         List<OperationOut> processingOperations = mainProcess(operationOuts, request);
         Map<Type, List<OperationOut>> map = processingOperations.stream()
@@ -63,7 +63,6 @@ public class OperationProcessor {
         processingOperations = processingOperations.stream()
             .map(operation -> operation.setDate(operation.getDate() / 1000))
             .map(operation -> operation.setTranDate(operation.getTranDate() / 1000))
-            .peek(operation -> operation.setTypeOfOperation(extractType(operation)))
             .collect(Collectors.toList());
         String period = request.getPeriod();
         if (period != null) {

@@ -57,7 +57,6 @@ public class MainController {
 
     @RequestMapping(value = "/", method = POST)
     public OperationResponse main(HttpEntity<String> httpEntity) throws JsonProcessingException {
-
         List<Operation> operations = operationRepo.findAll();
         String body = httpEntity.getBody();
         ObjectMapper mapper = new ObjectMapper();
@@ -81,9 +80,11 @@ public class MainController {
 
     @RequestMapping(value = "/month", method = POST)
     public MonthStat monthStat(HttpEntity<String> httpEntity) throws JsonProcessingException {
-        String date = httpEntity.getBody();
+        String body = httpEntity.getBody();
+        ObjectMapper mapper = new ObjectMapper();
+        MonthRequest request = mapper.readValue(body, MonthRequest.class);
         List<Operation> operations = operationRepo.findAll();
-        String strDate = "01." + date;
+        String strDate = "01." + request.getDate();
         LocalDate localDate = LocalDate.parse(strDate, DATE_FORMATTER);
         return new MonthProcessor().process(operations, localDate);
     }
