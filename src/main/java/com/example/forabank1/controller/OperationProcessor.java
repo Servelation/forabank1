@@ -71,7 +71,7 @@ public class OperationProcessor {
     private List<OperationOut> mainProcess(List<OperationOut> operations, RequestData request) {
         List<OperationOut> processingOperations = new ArrayList<>(operations);
         processingOperations = processingOperations.stream()
-            .map(operation -> operation.setDate(operation.getDate() / 1000))
+            .map(operation -> operation.setDate(operation.getDate() / 1000 / 3600 / 24))
             .map(operation -> operation.setTranDate(operation.getTranDate() / 1000))
             .map(operation -> new OperationOut(operation, extractType(operation)))
             .collect(Collectors.toList());
@@ -132,7 +132,7 @@ public class OperationProcessor {
             tenorSortingType = TenorSortingType.SORT_DOWN;
         }
         if (tenorFilterType == null) {
-            tenorFilterType = TenorFilterType.EXACT;
+            tenorFilterType = TenorFilterType.FILTER_BEFORE;
         }
 
         List<OperationOut> processingOperations = new ArrayList<>(operations);
@@ -143,11 +143,11 @@ public class OperationProcessor {
                 .collect(Collectors.toList());
         } else if (tenorFilterType == TenorFilterType.FILTER_BEFORE) {
             processingOperations = processingOperations.stream()
-                .filter(operation -> operation.getDate() > dateOfCount)
+                .filter(operation -> operation.getDate() >= dateOfCount)
                 .collect(Collectors.toList());
         } else if (tenorFilterType == TenorFilterType.FILTER_AFTER) {
             processingOperations = processingOperations.stream()
-                .filter(operation -> operation.getDate() < dateOfCount)
+                .filter(operation -> operation.getDate() <= dateOfCount)
                 .collect(Collectors.toList());
         }
 
