@@ -57,6 +57,21 @@ public class OperationOut {
         this.typeOfOperation = typeOfOperation;
     }
 
+    public OperationOut(OperationOut operation, TypeOfOperation typeOfOperation) {
+        this.type = operation.getType();
+        this.date = operation.getDate();
+        this.tranDate = operation.getTranDate();
+        this.operationType = operation.getOperationType();
+        this.amount = operation.getAmount();
+        this.comment = operation.getComment();
+        this.accountNumber = operation.getAccountNumber();
+        this.currencyCodeNumeric = operation.getCurrencyCodeNumeric();
+        this.fastPaymentData = operation.getFastPaymentData();
+        this.MCC = operation.getMCC();
+        this.typeOfOperation = typeOfOperation;
+    }
+
+
 
     public Type getType() {
         return type;

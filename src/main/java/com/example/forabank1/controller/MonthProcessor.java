@@ -48,11 +48,14 @@ public class MonthProcessor {
                 .mapToDouble(Operation::getAmount)
                 .sum();
             double percent = (sum * 100) / totalSum;
-            WasteByType wasteByType = new WasteByType(key, percent);
+            WasteByType wasteByType = new WasteByType(key, percent, sum);
             wastes.add(wasteByType);
         });
+        List<WasteByType> resWastes = wastes.stream()
+            .sorted((wast1, wast2) -> (int) (wast2.getAmount() - wast1.getAmount()))
+            .collect(Collectors.toList());
 
-        return new MonthStat(prihod, yhod, raznica, wastes);
+        return new MonthStat(prihod, yhod, raznica, resWastes);
     }
 
     // всегда 1 число даем

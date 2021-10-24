@@ -30,7 +30,7 @@ public class OperationProcessor {
 
     public OperationResponse process(List<Operation> operations, RequestData request) {
         List<OperationOut> operationOuts = operations.stream()
-            .map(operation -> new OperationOut(operation, request.getTypeOfOperation()))
+            .map(operation -> new OperationOut(operation, null))
             .collect(Collectors.toList());
         List<OperationOut> processingOperations = mainProcess(operationOuts, request);
         Integer page = request.getPage();
@@ -63,6 +63,7 @@ public class OperationProcessor {
         processingOperations = processingOperations.stream()
             .map(operation -> operation.setDate(operation.getDate() / 1000))
             .map(operation -> operation.setTranDate(operation.getTranDate() / 1000))
+            .map(operation -> new OperationOut(operation, extractType(operation)))
             .collect(Collectors.toList());
         String period = request.getPeriod();
         if (period != null) {
@@ -173,7 +174,7 @@ public class OperationProcessor {
                 .collect(Collectors.toList());
         } else if (sumSortType == SumSortType.SORT_UP) {
             return processingOperations.stream()
-                .sorted()
+                .sorted((op1, op2) -> (int) (op1.getAmount() - op2.getAmount()))
                 .collect(Collectors.toList());
         }
         return processingOperations;
@@ -238,10 +239,19 @@ public class OperationProcessor {
     }
 
     private TypeOfOperation extractType(OperationOut operation) {
-        if (operation.getMerchantName().equals(CASHBACK)) {
-            return TypeOfOperation.CASHBACK;
+        String merchantName = operation.getMerchantName();
+        if (merchantName != null) {
+            if (merchantName.equals(CASHBACK)) {
+                return TypeOfOperation.CASHBACK;
+            }
         }
         String comment = operation.getComment();
+        if (comment != null) {
+            if (comment.contains(CASHBACK)) {
+                return TypeOfOperation.CASHBACK;
+            }
+        }
+
         TypeOfOperation unknown = TypeOfOperation.UNKNOWN;
         for (TypeOfOperation type : TypeOfOperation.values()) {
             if (isOperationMatches(operation, type)) {

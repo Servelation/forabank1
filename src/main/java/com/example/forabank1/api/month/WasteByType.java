@@ -11,13 +11,17 @@ public class WasteByType {
     @JsonProperty
     private double percent;
 
+    @JsonProperty
+    private double amount;
+
     public WasteByType() {
 
     }
 
-    public WasteByType(TypeOfOperation type, double percent) {
+    public WasteByType(TypeOfOperation type, double percent, double amount) {
         this.type = type;
         this.percent = percent;
+        this.amount = amount;
     }
 
     public TypeOfOperation getType() {
@@ -34,5 +38,13 @@ public class WasteByType {
 
     public void setPercent(double percent) {
         this.percent = percent;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
     }
 }
