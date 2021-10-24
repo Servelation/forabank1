@@ -39,6 +39,24 @@ public class RequestData {
     public RequestData() {
     }
 
+    public RequestData(Integer page, Tenor tenor, TenorFilterType tenorFilterType,
+        TenorSortingType tenorSortingType, String period, Double sum,
+        SumFilterType sumFilterType, TypeOfOperation typeOfOperation,
+        SumSortType sumSortType, DirectionType directionType, String transferee)
+    {
+        this.page = page;
+        this.tenor = tenor;
+        this.tenorFilterType = tenorFilterType;
+        this.tenorSortingType = tenorSortingType;
+        this.period = period;
+        this.sum = sum;
+        this.sumFilterType = sumFilterType;
+        this.typeOfOperation = typeOfOperation;
+        this.sumSortType = sumSortType;
+        this.directionType = directionType;
+        this.transferee = transferee;
+    }
+
     public Integer getPage() {
         return page;
     }

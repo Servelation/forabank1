@@ -1,8 +1,16 @@
 package com.example.forabank1.controller;
 
+import com.example.forabank1.api.LastInside;
 import com.example.forabank1.api.OperationResponse;
+import com.example.forabank1.api.main.DirectionType;
 import com.example.forabank1.api.main.GroupNode;
 import com.example.forabank1.api.main.RequestData;
+import com.example.forabank1.api.main.SumFilterType;
+import com.example.forabank1.api.main.SumSortType;
+import com.example.forabank1.api.main.Tenor;
+import com.example.forabank1.api.main.TenorFilterType;
+import com.example.forabank1.api.main.TenorSortingType;
+import com.example.forabank1.api.main.TypeOfOperation;
 import com.example.forabank1.api.month.MonthRequest;
 import com.example.forabank1.api.month.MonthStat;
 import com.example.forabank1.domain.Operation;
@@ -27,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
@@ -45,21 +54,31 @@ public class MainController {
     }
 
     @RequestMapping(value = "/", method = POST)
-    public OperationResponse main(HttpEntity<String> httpEntity) throws JsonProcessingException {
+    public OperationResponse main(@ModelAttribute Integer page, @ModelAttribute Tenor tenor,
+        @ModelAttribute TenorFilterType tenorFilterType, @ModelAttribute TenorSortingType tenorSortingType,
+        @ModelAttribute String period, @ModelAttribute Double sum, @ModelAttribute SumFilterType sumFilterType,
+        @ModelAttribute SumSortType sumSortType, @ModelAttribute TypeOfOperation typeOfOperation,
+        @ModelAttribute DirectionType directionType,
+        @ModelAttribute String transferee) throws JsonProcessingException {
+
         List<Operation> operations = operationRepo.findAll();
-        String body = httpEntity.getBody();
-        ObjectMapper mapper = new ObjectMapper();
-        RequestData data = mapper.readValue(body, RequestData.class);
+        RequestData data = new RequestData(page, tenor, tenorFilterType, tenorSortingType, period, sum, sumFilterType,
+            typeOfOperation, sumSortType, directionType, transferee);
         OperationResponse processedOperations = new OperationProcessor().process(operations, data);
         return processedOperations;
     }
 
     @RequestMapping(value = "/group", method = POST)
-    public List<GroupNode> grouping(HttpEntity<String> httpEntity) throws JsonProcessingException {
+    public List<GroupNode> grouping(@ModelAttribute Integer page, @ModelAttribute Tenor tenor,
+        @ModelAttribute TenorFilterType tenorFilterType, @ModelAttribute TenorSortingType tenorSortingType,
+        @ModelAttribute String period, @ModelAttribute Double sum, @ModelAttribute SumFilterType sumFilterType,
+        @ModelAttribute SumSortType sumSortType, @ModelAttribute TypeOfOperation typeOfOperation,
+        @ModelAttribute DirectionType directionType,
+        @ModelAttribute String transferee) throws JsonProcessingException {
+
+        RequestData data = new RequestData(page, tenor, tenorFilterType, tenorSortingType, period, sum, sumFilterType,
+            typeOfOperation, sumSortType, directionType, transferee);
         List<Operation> operations = operationRepo.findAll();
-        String body = httpEntity.getBody();
-        ObjectMapper mapper = new ObjectMapper();
-        RequestData data = mapper.readValue(body, RequestData.class);
         Map<Type, List<OperationOut>> map = new OperationProcessor().group(operations, data);
         List<GroupNode> nodes = map.entrySet().stream()
             .map(entry -> new GroupNode(entry.getKey(), entry.getValue()))
@@ -67,15 +86,18 @@ public class MainController {
         return nodes;
     }
 
-    @RequestMapping(value = "/month", method = POST)
-    public MonthStat monthStat(HttpEntity<String> httpEntity) throws JsonProcessingException {
+    @RequestMapping(value = "/month", method = GET)
+    public MonthStat monthStat(@ModelAttribute String date) throws JsonProcessingException {
         List<Operation> operations = operationRepo.findAll();
-        String body = httpEntity.getBody();
-        ObjectMapper mapper = new ObjectMapper();
-        MonthRequest data = mapper.readValue(body, MonthRequest.class);
-        String strDate = "01." + data.getDate();
-        LocalDate date = LocalDate.parse(strDate, DATE_FORMATTER);
-        return new MonthProcessor().process(operations, date);
+        String strDate = "01." + date;
+        LocalDate localDate = LocalDate.parse(strDate, DATE_FORMATTER);
+        return new MonthProcessor().process(operations, localDate);
+    }
+
+    @RequestMapping(value = "/last")
+    public List<LastInside> lastInsides() {
+        List<Operation> operations = operationRepo.findAll();
+        return new LastInsidesProcessor().process(operations);
     }
 
     public void initializeData() {

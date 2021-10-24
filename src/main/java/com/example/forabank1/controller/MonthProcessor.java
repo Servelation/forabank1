@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class MonthProcessor {
-
+    private static final String CASHBACK = "CASHBACK";
 
     public MonthStat process(List<Operation> operations, LocalDate date) {
         List<Operation> processingOperations = new ArrayList<>(operations);
@@ -69,7 +69,9 @@ public class MonthProcessor {
     }
 
     private TypeOfOperation extractType(Operation operation) {
-        String comment = operation.getComment();
+        if (operation.getMerchantName().equals(CASHBACK)) {
+            return TypeOfOperation.CASHBACK;
+        }
         TypeOfOperation unknown = TypeOfOperation.UNKNOWN;
         for (TypeOfOperation type : TypeOfOperation.values()) {
             if (isOperationMatches(operation, type)) {

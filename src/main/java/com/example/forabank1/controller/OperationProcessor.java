@@ -26,6 +26,7 @@ public class OperationProcessor {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private static final long COUNT_OF_SEC_IN_DAY = 86_400L;
     private static final int PAGE_SIZE = 20;
+    private static final String CASHBACK = "CASHBACK";
 
     public OperationResponse process(List<Operation> operations, RequestData request) {
         List<OperationOut> operationOuts = operations.stream()
@@ -238,6 +239,9 @@ public class OperationProcessor {
     }
 
     private TypeOfOperation extractType(OperationOut operation) {
+        if (operation.getMerchantName().equals(CASHBACK)) {
+            return TypeOfOperation.CASHBACK;
+        }
         String comment = operation.getComment();
         TypeOfOperation unknown = TypeOfOperation.UNKNOWN;
         for (TypeOfOperation type : TypeOfOperation.values()) {

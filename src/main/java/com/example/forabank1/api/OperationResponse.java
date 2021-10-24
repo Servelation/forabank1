@@ -1,6 +1,5 @@
 package com.example.forabank1.api;
 
-import com.example.forabank1.domain.Operation;
 import com.example.forabank1.domain.OperationOut;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -14,7 +13,7 @@ public class OperationResponse {
     public Integer countOfPages;
 
     @JsonProperty
-    public Boolean isAbleToPagination;
+    public Boolean ableToPagination;
 
     @JsonProperty
     public List<OperationOut> operations;
@@ -26,7 +25,7 @@ public class OperationResponse {
     public OperationResponse(Integer currentPage, Integer countOfPages, Boolean isAbleToPagination, List<OperationOut> operations) {
         this.currentPage = currentPage;
         this.countOfPages = countOfPages;
-        this.isAbleToPagination = isAbleToPagination;
+        this.ableToPagination = isAbleToPagination;
         this.operations = operations;
     }
 
@@ -47,11 +46,11 @@ public class OperationResponse {
     }
 
     public Boolean getAbleToPagination() {
-        return isAbleToPagination;
+        return ableToPagination;
     }
 
     public void setAbleToPagination(Boolean ableToPagination) {
-        isAbleToPagination = ableToPagination;
+        ableToPagination = ableToPagination;
     }
 
     public List<OperationOut> getOperations() {
@@ -62,11 +61,4 @@ public class OperationResponse {
         this.operations = operations;
     }
 
-    public boolean isAbleToPagination() {
-        return isAbleToPagination;
-    }
-
-    public void setAbleToPagination(boolean ableToPagination) {
-        isAbleToPagination = ableToPagination;
-    }
 }

@@ -9,6 +9,7 @@ public enum TypeOfOperation {
     PEREVOD(Arrays.asList("Перевод", "Перечисление")),
     SPISANIE(Arrays.asList("Списание")),
     ZACHISL(Arrays.asList("Зачисление")),
+    CASHBACK(Arrays.asList("CASHBACK")),
     UNKNOWN(Arrays.asList("Неизвестно"));
     private List<String> names;
     TypeOfOperation(List<String> name) {
