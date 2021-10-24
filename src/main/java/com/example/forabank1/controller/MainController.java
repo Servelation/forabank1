@@ -21,6 +21,7 @@ import com.example.forabank1.repo.FastPaymentDataRepo;
 import com.example.forabank1.repo.OperationRepo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.ObjectBuffer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
@@ -36,6 +37,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.OPTIONS;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
@@ -54,30 +56,21 @@ public class MainController {
     }
 
     @RequestMapping(value = "/", method = POST)
-    public OperationResponse main(@ModelAttribute Integer page, @ModelAttribute Tenor tenor,
-        @ModelAttribute TenorFilterType tenorFilterType, @ModelAttribute TenorSortingType tenorSortingType,
-        @ModelAttribute String period, @ModelAttribute Double sum, @ModelAttribute SumFilterType sumFilterType,
-        @ModelAttribute SumSortType sumSortType, @ModelAttribute TypeOfOperation typeOfOperation,
-        @ModelAttribute DirectionType directionType,
-        @ModelAttribute String transferee) throws JsonProcessingException {
+    public OperationResponse main(HttpEntity<String> httpEntity) throws JsonProcessingException {
 
         List<Operation> operations = operationRepo.findAll();
-        RequestData data = new RequestData(page, tenor, tenorFilterType, tenorSortingType, period, sum, sumFilterType,
-            typeOfOperation, sumSortType, directionType, transferee);
+        String body = httpEntity.getBody();
+        ObjectMapper mapper = new ObjectMapper();
+        RequestData data = mapper.readValue(body, RequestData.class);
         OperationResponse processedOperations = new OperationProcessor().process(operations, data);
         return processedOperations;
     }
 
     @RequestMapping(value = "/group", method = POST)
-    public List<GroupNode> grouping(@ModelAttribute Integer page, @ModelAttribute Tenor tenor,
-        @ModelAttribute TenorFilterType tenorFilterType, @ModelAttribute TenorSortingType tenorSortingType,
-        @ModelAttribute String period, @ModelAttribute Double sum, @ModelAttribute SumFilterType sumFilterType,
-        @ModelAttribute SumSortType sumSortType, @ModelAttribute TypeOfOperation typeOfOperation,
-        @ModelAttribute DirectionType directionType,
-        @ModelAttribute String transferee) throws JsonProcessingException {
-
-        RequestData data = new RequestData(page, tenor, tenorFilterType, tenorSortingType, period, sum, sumFilterType,
-            typeOfOperation, sumSortType, directionType, transferee);
+    public List<GroupNode> grouping(HttpEntity<String> httpEntity) throws JsonProcessingException {
+        String body = httpEntity.getBody();
+        ObjectMapper mapper = new ObjectMapper();
+        RequestData data = mapper.readValue(body, RequestData.class);
         List<Operation> operations = operationRepo.findAll();
         Map<Type, List<OperationOut>> map = new OperationProcessor().group(operations, data);
         List<GroupNode> nodes = map.entrySet().stream()
@@ -87,7 +80,8 @@ public class MainController {
     }
 
     @RequestMapping(value = "/month", method = POST)
-    public MonthStat monthStat(@ModelAttribute String date) throws JsonProcessingException {
+    public MonthStat monthStat(HttpEntity<String> httpEntity) throws JsonProcessingException {
+        String date = httpEntity.getBody();
         List<Operation> operations = operationRepo.findAll();
         String strDate = "01." + date;
         LocalDate localDate = LocalDate.parse(strDate, DATE_FORMATTER);
@@ -114,4 +108,18 @@ public class MainController {
 
         return msg;
     }
+
+
+
+    @RequestMapping(value = "/", method = OPTIONS)
+    public OperationResponse main(@ModelAttribute Integer page, @ModelAttribute Tenor tenor,
+        @ModelAttribute TenorFilterType tenorFilterType, @ModelAttribute TenorSortingType tenorSortingType,
+        @ModelAttribute String period, @ModelAttribute Double sum, @ModelAttribute SumFilterType sumFilterType,
+        @ModelAttribute SumSortType sumSortType, @ModelAttribute TypeOfOperation typeOfOperation,
+        @ModelAttribute DirectionType directionType,
+        @ModelAttribute String transferee) throws JsonProcessingException {
+
+        return null;
+    }
+
 }
